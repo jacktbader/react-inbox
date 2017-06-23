@@ -1,7 +1,20 @@
 import React from 'react'
+import {
+  markAsRead,
+  markAsUnread,
+  deleteMessages,
+  toggleSelectAll,
+  applyLabel,
+  removeLabel,
+  toggleCompose
+} from '../actions'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 
 const Toolbar = ({
-  messages,
+  messagesLength,
+  unreadCount,
+  selectedCount,
   toggleSelectAll,
   toggleCompose,
   markAsRead,
@@ -10,15 +23,13 @@ const Toolbar = ({
   removeLabel,
   deleteMessages,
 }) => {
-  const unreadCount = messages.filter(message => !message.read).length
-  const selectedCount = messages.filter(message => message.selected).length
   let selectAllClass
 
   switch(selectedCount) {
     case 0:
       selectAllClass = 'fa-square-o'
       break;
-    case messages.length:
+    case messagesLength:
       selectAllClass = 'fa-check-square-o'
       break;
     default:
@@ -35,19 +46,19 @@ const Toolbar = ({
           unread {unreadCount === 1 ? 'message' : 'messages'}
         </p>
 
-        <button className="btn btn-danger" onClick={toggleCompose}>
+        <button className="btn btn-danger" onClick={() => toggleCompose()}>
           <i className={`fa fa-plus`}></i>
         </button>
 
-        <button className="btn btn-default" onClick={toggleSelectAll}>
+        <button className="btn btn-default" onClick={() => toggleSelectAll()}>
           <i className={`fa ${selectAllClass}`}></i>
         </button>
 
-        <button className="btn btn-default" onClick={markAsRead} disabled={selectedCount === 0}>
+        <button className="btn btn-default" onClick={() => markAsRead()} disabled={selectedCount === 0}>
           Mark As Read
         </button>
 
-        <button className="btn btn-default" onClick={markAsUnread} disabled={selectedCount === 0}>
+        <button className="btn btn-default" onClick={() => markAsUnread()} disabled={selectedCount === 0}>
           Mark As Unread
         </button>
 
@@ -73,7 +84,7 @@ const Toolbar = ({
           <option value="gschool">gschool</option>
         </select>
 
-        <button className="btn btn-default" onClick={deleteMessages} disabled={selectedCount === 0}>
+        <button className="btn btn-default" onClick={() => deleteMessages()} disabled={selectedCount === 0}>
           <i className="fa fa-trash-o"></i>
         </button>
       </div>
@@ -81,4 +92,29 @@ const Toolbar = ({
   )
 }
 
-export default Toolbar
+const mapStateToProps = (state, { messageId }) => {
+  const { byId, allIds } = state.messages;
+  const unreadCount = allIds.filter(messageId => !byId[messageId].read).length
+  const selectedCount =  allIds.filter(messageId => byId[messageId].selected).length
+  const messagesLength = allIds.length
+  return {
+    messagesLength,
+    unreadCount,
+    selectedCount
+  }
+}
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  markAsRead,
+  markAsUnread,
+  deleteMessages,
+  toggleSelectAll,
+  applyLabel,
+  removeLabel,
+  toggleCompose
+}, dispatch)
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Toolbar);

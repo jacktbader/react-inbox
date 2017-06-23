@@ -1,17 +1,14 @@
 import React from 'react'
 import Message from './Message'
+import { connect } from 'react-redux'
 
 const Messages = ({
-  messages,
-  toggleSelect,
-  toggleStar,
+  messageIds
 }) => {
-  const messageComponents = messages.map(message => (
+  const messageComponents = messageIds.map(id => (
     <Message
-      key={message.id}
-      message={message}
-      toggleSelect={toggleSelect}
-      toggleStar={toggleStar}
+      key={id}
+      messageId={id}
       />
   ))
 
@@ -22,4 +19,10 @@ const Messages = ({
   )
 }
 
-export default Messages
+const mapStateToProps = state => ({
+  messageIds: state.messages.allIds
+})
+
+export default connect(
+  mapStateToProps
+)(Messages);

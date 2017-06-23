@@ -1,6 +1,11 @@
 import React from 'react'
+import {
+  sendMessage
+} from '../actions'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 
-const ComposeMessage = ({ people, sendMessage }) => {
+const ComposeMessage = ({ composing, sendMessage }) => {
   const submitForm = (e) => {
     e.preventDefault()
     sendMessage({
@@ -9,7 +14,7 @@ const ComposeMessage = ({ people, sendMessage }) => {
     })
   }
 
-  return (
+  return composing ? (
     <form className="form-horizontal well" onSubmit={ submitForm }>
       <div className="form-group">
         <div className="col-sm-8 col-sm-offset-2">
@@ -38,7 +43,20 @@ const ComposeMessage = ({ people, sendMessage }) => {
       </div>
 
     </form>
-  )
+  ) : null;
 }
 
-export default ComposeMessage
+const mapStateToProps = ({ messages }) => {
+  return {
+    composing: messages.composing
+  }
+}
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  sendMessage
+}, dispatch)
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ComposeMessage);
