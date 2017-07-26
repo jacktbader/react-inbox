@@ -4,17 +4,18 @@ import {
 } from '../actions'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import { withRouter } from 'react-router-dom'
 
-const ComposeMessage = ({ composing, sendMessage }) => {
+const ComposeMessage = ({ sendMessage, history }) => {
   const submitForm = (e) => {
     e.preventDefault()
     sendMessage({
       subject: e.target.subject.value,
       body: e.target.body.value,
-    })
+    }, history)
   }
 
-  return composing ? (
+  return (
     <form className="form-horizontal well" onSubmit={ submitForm }>
       <div className="form-group">
         <div className="col-sm-8 col-sm-offset-2">
@@ -41,22 +42,15 @@ const ComposeMessage = ({ composing, sendMessage }) => {
           <input type="submit" value="Send" className="btn btn-primary" />
         </div>
       </div>
-
     </form>
-  ) : null;
-}
-
-const mapStateToProps = ({ messages }) => {
-  return {
-    composing: messages.composing
-  }
+  )
 }
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   sendMessage
 }, dispatch)
 
-export default connect(
-  mapStateToProps,
+export default withRouter(connect(
+  null,
   mapDispatchToProps
-)(ComposeMessage);
+)(ComposeMessage));

@@ -1,10 +1,13 @@
 import React from 'react'
+import { Route, withRouter } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import {
   toggleSelect,
   toggleStar
 } from '../actions'
+import MessageBody from './MessageBody'
 
 const Message = ({
   messageId,
@@ -15,6 +18,7 @@ const Message = ({
   labels,
   toggleSelect,
   toggleStar,
+  history
 }) => {
   const readClass = read ? 'read' : 'unread'
   const selectedClass = selected ? 'selected' : ""
@@ -24,8 +28,8 @@ const Message = ({
     <span key={i} className="label label-warning">{label}</span>
   ))
 
-  return (
-    <div className={`row message ${readClass} ${selectedClass}`}>
+  return [
+    <div key="message" className={`row message ${readClass} ${selectedClass}`}>
       <div className="col-xs-1">
         <div className="row">
           <div className="col-xs-2">
@@ -43,10 +47,17 @@ const Message = ({
       </div>
       <div className="col-xs-11">
         {renderedLables}
-        {subject}
+        <Link to={`/messages/${messageId}`}>{subject}</Link>
       </div>
-    </div>
-  )
+    </div>,
+
+    <Route
+      key="message-body"
+      path={ `/messages/${messageId}` }
+      render={ props => {
+        return <MessageBody messageId={messageId} {...props} />
+      }} />
+  ]
 }
 
 const mapStateToProps = (state, { messageId }) => {
@@ -68,7 +79,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   toggleStar
 }, dispatch)
 
-export default connect(
+export default withRouter(connect(
   mapStateToProps,
   mapDispatchToProps
-)(Message);
+)(Message));

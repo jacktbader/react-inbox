@@ -7,6 +7,7 @@ import {
 } from '../actions'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import { withRouter, Route } from 'react-router-dom'
 import './App.css';
 
 class App extends Component {
@@ -33,7 +34,12 @@ class App extends Component {
 
         <div className="container">
           <Toolbar />
-          <ComposeMessage />
+          {
+            <Route
+             path="/compose"
+             component={ComposeMessage}
+            />
+          }
           <Messages />
         </div>
       </div>
@@ -41,13 +47,11 @@ class App extends Component {
   }
 }
 
-//only connect to redux store to be able to fetch messages,
-//which are used by all other components.
 const mapDispatchToProps = dispatch => bindActionCreators({
   getMessages
 }, dispatch)
 
-export default connect(
+export default withRouter(connect(
   null,
   mapDispatchToProps
-)(App);
+)(App));

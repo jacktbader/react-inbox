@@ -14,6 +14,25 @@ export const getMessages = () => {
   }
 }
 
+export const MESSAGE_BODY_REQUEST_STARTED = 'MESSAGE_BODY_REQUEST_STARTED'
+export const MESSAGE_BODY_REQUEST_SUCCESS = 'MESSAGE_BODY_REQUEST_SUCCESS'
+export const fetchMessageBody = (messageId) => {
+  return async (dispatch, getState) => {
+    const message = getState().messages.byId[messageId]
+    dispatch({ type: MESSAGE_BODY_REQUEST_STARTED })
+
+    const response = await fetch(message._links.self.href)
+    const json = await response.json()
+
+    dispatch({
+      type: MESSAGE_BODY_REQUEST_SUCCESS,
+      messageId,
+      body: json.body
+    })
+
+    dispatch(markAsRead(messageId));
+  }
+}
 export const MESSAGE_SELECTED = 'MESSAGE_SELECTED'
 export const toggleSelect = (messageId) => {
   return {
@@ -40,12 +59,19 @@ export const toggleStar = (messageId) => {
 }
 
 export const MESSAGES_MARKED_AS_READ = 'MESSAGES_MARKED_AS_READ'
-export const markAsRead = () => {
+export const markAsRead = (messageId) => {
   return async (dispatch, getState) => {
     const state = getState();
-    const messageIds = state.messages.allIds.filter((messageId) => {
-      return state.messages.byId[messageId].selected
-    })
+    let messageIds;
+
+    if (messageId) {
+      messageIds = [messageId];
+    } else {
+      messageIds = state.messages.allIds.filter((messageId) => {
+        return state.messages.byId[messageId].selected
+      })
+    }
+
     await updateMessages({
       "messageIds": messageIds,
       "command": "read",
@@ -98,7 +124,7 @@ export const toggleSelectAll = () => {
 
 export const MESSAGES_TOGGLE_COMPOSING = 'MESSAGES_TOGGLE_COMPOSING'
 export const toggleCompose = () => {
-  return  { type: MESSAGES_TOGGLE_COMPOSING }
+  return { type: MESSAGES_TOGGLE_COMPOSING }
 }
 
 export const MESSAGES_APPLY_LABEL = 'MESSAGES_APPLY_LABEL'
@@ -139,7 +165,7 @@ export const removeLabel = (label) => {
 
 export const MESSAGE_SEND_STARTED = 'MESSAGE_SEND_STARTED'
 export const MESSAGE_SEND_COMPLETE = 'MESSAGE_SEND_COMPLETE'
-export const sendMessage = (message) => {
+export const sendMessage = (message, history) => {
   return async (dispatch) => {
     dispatch({ type: MESSAGE_SEND_STARTED })
 
@@ -153,6 +179,8 @@ export const sendMessage = (message) => {
       type: MESSAGE_SEND_COMPLETE,
       message: newMessage,
     })
+
+    history.push('/');
   }
 }
 

@@ -15,6 +15,7 @@ import {
   MESSAGES_REMOVE_LABEL,
   MESSAGE_SEND_STARTED,
   MESSAGE_SEND_COMPLETE,
+  MESSAGE_BODY_REQUEST_SUCCESS
 } from '../actions'
 
 const initialState = {
@@ -60,11 +61,9 @@ export default (state = initialState, action) => {
         byId: setPropertyValueOnCollection(state.byId, action.messageIds, 'read', false)
       }
     case MESSAGES_DELETED:
-      console.log(action.messageIds,action.messageIds.indexOf(6) );
       return {
         ...state,
         allIds: state.allIds.filter(messageId => {
-          console.log(messageId,action.messageIds.indexOf(messageId) );
           return action.messageIds.indexOf(messageId) === -1
         }),
       }
@@ -119,6 +118,11 @@ export default (state = initialState, action) => {
       return {
         ...state,
         byId
+      }
+    case MESSAGE_BODY_REQUEST_SUCCESS:
+      return {
+        ...state,
+        byId: setPropertyValue(state.byId, action.messageId, 'body', action.body)
       }
     case MESSAGE_SEND_STARTED:
       return {

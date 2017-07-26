@@ -1,6 +1,7 @@
 import React from 'react'
 import Message from './Message'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
 
 const Messages = ({
   messageIds
@@ -23,6 +24,6 @@ const mapStateToProps = state => ({
   messageIds: state.messages.allIds
 })
 
-export default connect(
+export default withRouter(connect(
   mapStateToProps
-)(Messages);
+)(Messages));

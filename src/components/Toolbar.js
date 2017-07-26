@@ -10,6 +10,7 @@ import {
 } from '../actions'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import { Link, Route, Switch, withRouter } from 'react-router-dom'
 
 const Toolbar = ({
   messagesLength,
@@ -46,9 +47,18 @@ const Toolbar = ({
           unread {unreadCount === 1 ? 'message' : 'messages'}
         </p>
 
-        <button className="btn btn-danger" onClick={() => toggleCompose()}>
-          <i className={`fa fa-plus`}></i>
-        </button>
+        <Switch>
+         <Route path="/compose" render={ () => (
+           <Link className="btn btn-danger" to="/">
+             <i className={`fa fa-plus`}></i>
+           </Link>
+         )} />
+         <Route render={ () => (
+           <Link className="btn btn-danger" to="/compose">
+             <i className={`fa fa-plus`}></i>
+           </Link>
+         )} />
+       </Switch>
 
         <button className="btn btn-default" onClick={() => toggleSelectAll()}>
           <i className={`fa ${selectAllClass}`}></i>
@@ -114,7 +124,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   toggleCompose
 }, dispatch)
 
-export default connect(
+export default withRouter(connect(
   mapStateToProps,
   mapDispatchToProps
-)(Toolbar);
+)(Toolbar));
